@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GK Quiz Game</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:#222;
+color:white;
+}
+
+button{
+display:block;
+margin:10px auto;
+padding:12px;
+width:260px;
+font-size:16px;
+cursor:pointer;
+}
+
+.correct{
+background:green;
+color:white;
+}
+
+.wrong{
+background:red;
+color:white;
+}
+
+#timer{
+color:yellow;
+font-size:20px;
+}
+
+#quizBox{
+margin-top:30px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>GK Quiz Game</h1>
+
+<select id="subject">
+<option value="history">History</option>
+<option value="geography">Geography</option>
+<option value="science">Science</option>
+</select>
+
+<br><br>
+
+<button onclick="startQuiz()">Start Quiz</button>
+
+<div id="quizBox" style="display:none">
+<h2 id="question"></h2>
+<div id="options"></div>
+<p>Time Left: <span id="timer">10</span></p>
+<p>Score: <span id="score">0</span></p>
+</div>
+
+<script>
+let database = {
+
+history:[
+{q:"Who discovered India?", o:["Columbus","Vasco da Gama","Magellan","Cook"], a:1},
+{q:"First Mughal emperor?", o:["Akbar","Babur","Humayun","Aurangzeb"], a:1},
+{q:"Who built Taj Mahal?", o:["Akbar","Shah Jahan","Babur","Aurangzeb"], a:1},
+{q:"Quit India movement year?", o:["1942","1930","1920","1919"], a:0},
+{q:"First President of India?", o:["Rajendra Prasad","Nehru","Gandhi","Patel"], a:0},
+{q:"Indian independence from Britain?", o:["1945","1947","1950","1942"], a:1},
+{q:"Largest state by area in India?", o:["Maharashtra","Rajasthan","Uttar Pradesh","Madhya Pradesh"], a:1},
+{q:"Indian national animal?", o:["Lion","Tiger","Elephant","Peacock"], a:1},
+{q:"National bird of India?", o:["Peacock","Swan","Crow","Sparrow"], a:0},
+{q:"Who wrote 'India Wins Freedom'?", o:["Nehru","Gandhi","Sardar Patel","Subhash Chandra Bose"], a:0}
+],
+
+geography:[
+{q:"Largest ocean?", o:["Atlantic","Indian","Pacific","Arctic"], a:2},
+{q:"Capital of Kerala?", o:["Kochi","Thiruvananthapuram","Kannur","Thrissur"], a:1},
+{q:"Highest mountain?", o:["Everest","K2","Kanchenjunga","Lhotse"], a:0},
+{q:"Longest river?", o:["Nile","Amazon","Yangtze","Mississippi"], a:0},
+{q:"Largest desert?", o:["Sahara","Gobi","Arabian","Kalahari"], a:0},
+{q:"Country with most population?", o:["India","USA","China","Russia"], a:2},
+{q:"Largest continent?", o:["Asia","Africa","Europe","Antarctica"], a:0},
+{q:"Capital of Japan?", o:["Tokyo","Beijing","Seoul","Bangkok"], a:0},
+{q:"Deepest ocean trench?", o:["Mariana Trench","Tonga Trench","Kuril Trench","Java Trench"], a:0},
+{q:"Longest river in India?", o:["Ganga","Yamuna","Brahmaputra","Godavari"], a:0}
+],
+
+science:[
+{q:"H2O is?", o:["Hydrogen","Oxygen","Water","Salt"], a:2},
+{q:"Sun is a?", o:["Planet","Star","Asteroid","Galaxy"], a:1},
+{q:"Human heart chambers?", o:["2","3","4","5"], a:2},
+{q:"Speed of light approx?", o:["300000 km/s","150000 km/s","100000 km/s","50000 km/s"], a:0},
+{q:"Gas for breathing?", o:["Nitrogen","Oxygen","Hydrogen","Carbon"], a:1},
+{q:"Force = Mass x?", o:["Velocity","Gravity","Acceleration","Energy"], a:2},
+{q:"Which is a noble gas?", o:["Oxygen","Helium","Hydrogen","Nitrogen"], a:1},
+{q:"Largest planet?", o:["Earth","Mars","Jupiter","Venus"], a:2},
+{q:"Boiling point of water?", o:["90°C","80°C","100°C","70°C"], a:2},
+{q:"Smallest unit of life?", o:["Atom","Cell","Molecule","Organ"], a:1}
+]
+
+};
+
+let questions=[];
+let index=0;
+let score=0;
+let timer;
+let timeLeft=10;
+let answered=false;
+
+function startQuiz(){
+let subject=document.getElementById("subject").value;
+questions=database[subject];
+index=0;
+score=0;
+document.getElementById("quizBox").style.display="block";
+loadQuestion();
+}
+
+function loadQuestion(){
+answered=false;
+let q=questions[index];
+document.getElementById("question").innerText=q.q;
+let optionsDiv=document.getElementById("options");
+optionsDiv.innerHTML="";
+q.o.forEach((opt,i)=>{
+let btn=document.createElement("button");
+btn.innerText=opt;
+btn.onclick=()=>checkAnswer(i,btn);
+optionsDiv.appendChild(btn);
+});
+startTimer();
+}
+
+function startTimer(){
+timeLeft=10;
+document.getElementById("timer").innerText=timeLeft;
+clearInterval(timer);
+timer=setInterval(()=>{
+timeLeft--;
+document.getElementById("timer").innerText=timeLeft;
+if(timeLeft<=0){
+clearInterval(timer);
+nextQuestion();
+}
+},1000);
+}
+
+function checkAnswer(i,btn){
+if(answered) return;
+answered=true;
+clearInterval(timer);
+let correct=questions[index].a;
+let buttons=document.querySelectorAll("#options button");
+buttons.forEach((b,n)=>{
+if(n==correct){ b.classList.add("correct"); }
+if(n==i && i!=correct){ b.classList.add("wrong"); }
+});
+if(i==correct){ score++; }
+document.getElementById("score").innerText=score;
+setTimeout(nextQuestion,1500);
+}
+
+function nextQuestion(){
+index++;
+if(index>=questions.length){
+alert("Quiz Finished! Score: "+score);
+location.reload();
+return;
+}
+loadQuestion();
+}
+</script>
+
+</body>
+</html>
